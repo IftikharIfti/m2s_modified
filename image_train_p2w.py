@@ -1,6 +1,16 @@
 """
 Train a diffusion model on images.
 """
+#from amed##################
+import os
+import re
+import json
+import click
+import torch
+import dnnlib_amed #was dnnlib in amed
+from torch_utils import distributed as dist
+from training_amed import training_loop
+#from amed##################
 
 import argparse
 

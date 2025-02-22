@@ -7,8 +7,8 @@ import torch as th
 import torch.nn as nn
 import torch.nn.functional as F
 
-from models.cm.fp16_util import convert_module_to_f16, convert_module_to_f32
-from models.cm.nn import (
+from models_amed.cm.fp16_util import convert_module_to_f16, convert_module_to_f32
+from models_amed.cm.nn import (
     checkpoint,
     conv_nd,
     linear,

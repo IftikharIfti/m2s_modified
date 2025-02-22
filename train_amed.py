@@ -3,9 +3,9 @@ import re
 import json
 import click
 import torch
-import dnnlib
+import dnnlib_amed
 from torch_utils import distributed as dist
-from training import training_loop
+from training_amed import training_loop
 
 import warnings
 warnings.filterwarnings('ignore', 'Grad strides do not match bucket view strides') # False warning printed by PyTorch 1.12.
@@ -56,15 +56,15 @@ warnings.filterwarnings('ignore', 'Grad strides do not match bucket view strides
 @click.option('-n', '--dry-run',    help='Print training options and exit',                            is_flag=True)
 
 def main(**kwargs):
-    opts = dnnlib.EasyDict(kwargs)
+    opts = dnnlib_amed.EasyDict(kwargs)
     torch.multiprocessing.set_start_method('spawn')
     dist.init()
 
     # Initialize config dict.
-    c = dnnlib.EasyDict()
-    c.loss_kwargs = dnnlib.EasyDict()
-    c.AMED_kwargs = dnnlib.EasyDict()
-    c.optimizer_kwargs = dnnlib.EasyDict(class_name='torch.optim.Adam', lr=opts.lr, betas=[0.9,0.999], eps=1e-8)
+    c = dnnlib_amed.EasyDict()
+    c.loss_kwargs = dnnlib_amed.EasyDict()
+    c.AMED_kwargs = dnnlib_amed.EasyDict()
+    c.optimizer_kwargs = dnnlib_amed.EasyDict(class_name='torch.optim.Adam', lr=opts.lr, betas=[0.9,0.999], eps=1e-8)
 
     # AMED predictor architecture.
     c.AMED_kwargs.class_name = 'training.networks.AMED_predictor'
@@ -148,7 +148,7 @@ def main(**kwargs):
         os.makedirs(c.run_dir, exist_ok=True)
         with open(os.path.join(c.run_dir, 'training_options.json'), 'wt') as f:
             json.dump(c, f, indent=2)
-        dnnlib.util.Logger(file_name=os.path.join(c.run_dir, 'log.txt'), file_mode='a', should_flush=True)
+        dnnlib_amed.util.Logger(file_name=os.path.join(c.run_dir, 'log.txt'), file_mode='a', should_flush=True)
 
     # Train.
     training_loop.training_loop(**c)

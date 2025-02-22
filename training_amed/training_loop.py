@@ -8,13 +8,13 @@ import json
 import pickle
 import numpy as np
 import torch
-import dnnlib
+import dnnlib_amed
 import random
 from torch import autocast
 from torch_utils import distributed as dist
 from torch_utils import training_stats
 from torch_utils import misc
-from models.ldm.util import instantiate_from_config
+from models_amed.ldm.util import instantiate_from_config
 from torch_utils.download_util import check_file_by_key
 
 #----------------------------------------------------------------------------
@@ -43,32 +43,32 @@ def create_model(dataset_name=None, guidance_type=None, guidance_rate=None, devi
     dist.print0(f'Loading the pre-trained diffusion model from "{model_path}"...')
 
     if dataset_name in ['cifar10', 'ffhq', 'afhqv2', 'imagenet64']:         # models from EDM
-        with dnnlib.util.open_url(model_path, verbose=(dist.get_rank() == 0)) as f:
+        with dnnlib_amed.util.open_url(model_path, verbose=(dist.get_rank() == 0)) as f:
             net = pickle.load(f)['ema'].to(device)
         net.sigma_min = 0.002
         net.sigma_max = 80.0
     elif dataset_name in ['lsun_bedroom']:                                  # models from Consistency Models
-        from models.cm.cm_model_loader import load_cm_model
-        from models.networks_edm import CMPrecond
+        from models_amed.cm.cm_model_loader import load_cm_model
+        from models_amed.networks_edm import CMPrecond
         net = load_cm_model(model_path)
         net = CMPrecond(net).to(device)
     else:
         if guidance_type == 'cg':            # clssifier guidance           # models from ADM
             assert classifier_path is not None
-            from models.guided_diffusion.cg_model_loader import load_cg_model
-            from models.networks_edm import CGPrecond
+            from models_amed.guided_diffusion.cg_model_loader import load_cg_model
+            from models_amed.networks_edm import CGPrecond
             net, classifier = load_cg_model(model_path, classifier_path)
             net = CGPrecond(net, classifier, guidance_rate=guidance_rate).to(device)
         elif guidance_type in ['uncond', 'cfg']:                            # models from LDM
             from omegaconf import OmegaConf
-            from models.networks_edm import CFGPrecond
+            from models_amed.networks_edm import CFGPrecond
             if dataset_name in ['lsun_bedroom_ldm']:
-                config = OmegaConf.load('./models/ldm/configs/latent-diffusion/lsun_bedrooms-ldm-vq-4.yaml')
+                config = OmegaConf.load('./models_amed/ldm/configs/latent-diffusion/lsun_bedrooms-ldm-vq-4.yaml')
                 net = load_ldm_model(config, model_path)
                 net = CFGPrecond(net, img_resolution=64, img_channels=3, guidance_rate=1., guidance_type='uncond', label_dim=0).to(device)
             elif dataset_name in ['ms_coco']:
                 assert guidance_type == 'cfg'
-                config = OmegaConf.load('./models/ldm/configs/stable-diffusion/v1-inference.yaml')
+                config = OmegaConf.load('./models_amed/ldm/configs/stable-diffusion/v1-inference.yaml')
                 net = load_ldm_model(config, model_path)
                 net = CFGPrecond(net, img_resolution=64, img_channels=4, guidance_rate=guidance_rate, guidance_type='classifier-free', label_dim=True).to(device)
     if net is None:
@@ -139,7 +139,7 @@ def training_loop(
     # Construct AMED predictor.
     dist.print0('Constructing AMED predictor...')
     AMED_kwargs.update(img_resolution=net.img_resolution)
-    AMED_predictor = dnnlib.util.construct_class_by_name(**AMED_kwargs) # subclass of torch.nn.Module
+    AMED_predictor = dnnlib_amed.util.construct_class_by_name(**AMED_kwargs) # subclass of torch.nn.Module
     AMED_predictor.train().requires_grad_(True).to(device)
 
     # Setup optimizer.
@@ -148,8 +148,8 @@ def training_loop(
                        M=AMED_kwargs.M, schedule_type=AMED_kwargs.schedule_type, schedule_rho=AMED_kwargs.schedule_rho, \
                        afs=AMED_kwargs.afs, max_order=AMED_kwargs.max_order, sigma_min=net.sigma_min, sigma_max=net.sigma_max, \
                        predict_x0=AMED_kwargs.predict_x0, lower_order_final=AMED_kwargs.lower_order_final)
-    loss_fn = dnnlib.util.construct_class_by_name(**loss_kwargs)
-    optimizer = dnnlib.util.construct_class_by_name(params=AMED_predictor.parameters(), **optimizer_kwargs) # subclass of torch.optim.Optimizer
+    loss_fn = dnnlib_amed.util.construct_class_by_name(**loss_kwargs)
+    optimizer = dnnlib_amed.util.construct_class_by_name(params=AMED_predictor.parameters(), **optimizer_kwargs) # subclass of torch.optim.Optimizer
     ddp = torch.nn.parallel.DistributedDataParallel(AMED_predictor, device_ids=[device], broadcast_buffers=False)
     
     # Train.
@@ -227,7 +227,7 @@ def training_loop(
         fields = []
         fields += [f"tick {training_stats.report0('Progress/tick', cur_tick):<5d}"]
         fields += [f"kimg {training_stats.report0('Progress/kimg', cur_nimg / 1e3):<9.1f}"]
-        fields += [f"time {dnnlib.util.format_time(training_stats.report0('Timing/total_sec', tick_end_time - start_time)):<12s}"]
+        fields += [f"time {dnnlib_amed.util.format_time(training_stats.report0('Timing/total_sec', tick_end_time - start_time)):<12s}"]
         fields += [f"sec/tick {training_stats.report0('Timing/sec_per_tick', tick_end_time - tick_start_time):<7.1f}"]
         fields += [f"sec/kimg {training_stats.report0('Timing/sec_per_kimg', (tick_end_time - tick_start_time) / (cur_nimg - tick_start_nimg) * 1e3):<7.2f}"]
         fields += [f"maintenance {training_stats.report0('Timing/maintenance_sec', maintenance_time):<6.1f}"]

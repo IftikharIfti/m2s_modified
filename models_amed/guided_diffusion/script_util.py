@@ -1,8 +1,8 @@
 import argparse
 import inspect
 
-from models.guided_diffusion import gaussian_diffusion as gd
-from models.guided_diffusion.unet import UNetModel, EncoderUNetModel
+from models_amed.guided_diffusion import gaussian_diffusion as gd
+from models_amed.guided_diffusion.unet import UNetModel, EncoderUNetModel
 
 NUM_CLASSES = 1000
 

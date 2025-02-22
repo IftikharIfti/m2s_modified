@@ -13,7 +13,7 @@ import zipfile
 import PIL.Image
 import json
 import torch
-import dnnlib
+import dnnlib_amed
 from torchvision import transforms
 
 try:
@@ -119,7 +119,7 @@ class Dataset(torch.utils.data.Dataset):
         return label.copy()
 
     def get_details(self, idx):
-        d = dnnlib.EasyDict()
+        d = dnnlib_amed.EasyDict()
         d.raw_idx = int(self._raw_idx[idx])
         d.xflip = (int(self._xflip[idx]) != 0)
         d.raw_label = self._get_raw_labels()[d.raw_idx].copy()

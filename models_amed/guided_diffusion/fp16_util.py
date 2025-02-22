@@ -7,7 +7,7 @@ import torch as th
 import torch.nn as nn
 from torch._utils import _flatten_dense_tensors, _unflatten_dense_tensors
 
-from models.guided_diffusion import logger
+from models_amed.guided_diffusion import logger
 
 INITIAL_LOG_LOSS_SCALE = 20.0
 

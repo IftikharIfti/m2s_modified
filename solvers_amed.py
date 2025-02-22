@@ -1,5 +1,5 @@
 import torch
-from solver_utils import *
+from solver_utils_amed import *
 
 #----------------------------------------------------------------------------
 # Initialize the hook function to get the U-Net bottleneck outputs

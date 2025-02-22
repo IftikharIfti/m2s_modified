@@ -4,7 +4,7 @@ numpy array. This can be used to produce samples for FID evaluation.
 """
 
 import torch
-from models.guided_diffusion.unet import UNetModel, EncoderUNetModel
+from models_amed.guided_diffusion.unet import UNetModel, EncoderUNetModel
 
 NUM_CLASSES = 1000
 

@@ -11,8 +11,8 @@ import math
 import numpy as np
 import torch as th
 
-from models.guided_diffusion.nn import mean_flat
-from models.guided_diffusion.losses import normal_kl, discretized_gaussian_log_likelihood
+from models_amed.guided_diffusion.nn import mean_flat
+from models_amed.guided_diffusion.losses import normal_kl, discretized_gaussian_log_likelihood
 
 
 def get_named_beta_schedule(schedule_name, num_diffusion_timesteps):

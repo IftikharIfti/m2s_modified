@@ -7,7 +7,7 @@ import pickle
 import numpy as np
 import torch
 import PIL.Image
-import dnnlib
+import dnnlib_amed
 from torch import autocast
 from torch_utils import distributed as dist
 from torchvision.utils import make_grid, save_image
@@ -55,7 +55,7 @@ def parse_int_list(s):
 # and Stable Diffusion codebase (https://github.com/CompVis/stable-diffusion)
 
 def load_ldm_model(config, ckpt, verbose=False):
-    from models.ldm.util import instantiate_from_config
+    from models_amed.ldm.util import instantiate_from_config
     pl_sd = torch.load(ckpt, map_location="cpu")
     if "global_step" in pl_sd:
         dist.print0(f"Global Step: {pl_sd['global_step']}")
@@ -77,35 +77,35 @@ def create_model(dataset_name=None, guidance_type=None, guidance_rate=None, devi
     dist.print0(f'Loading the pre-trained diffusion model from "{model_path}"...')
 
     if dataset_name in ['cifar10', 'ffhq', 'afhqv2', 'imagenet64']:         # models from EDM
-        with dnnlib.util.open_url(model_path, verbose=(dist.get_rank() == 0)) as f:
+        with dnnlib_amed.util.open_url(model_path, verbose=(dist.get_rank() == 0)) as f:
             net = pickle.load(f)['ema'].to(device)
         net.sigma_min = 0.002
         net.sigma_max = 80.0
         model_source = 'edm'
     elif dataset_name in ['lsun_bedroom']:                                  # models from Consistency Models
-        from models.cm.cm_model_loader import load_cm_model
-        from models.networks_edm import CMPrecond
+        from models_amed.cm.cm_model_loader import load_cm_model
+        from models_amed.networks_edm import CMPrecond
         net = load_cm_model(model_path)
         net = CMPrecond(net).to(device)
         model_source = 'cm'
     else:
         if guidance_type == 'cg':            # clssifier guidance           # models from ADM
             assert classifier_path is not None
-            from models.guided_diffusion.cg_model_loader import load_cg_model
-            from models.networks_edm import CGPrecond
+            from models_amed.guided_diffusion.cg_model_loader import load_cg_model
+            from models_amed.networks_edm import CGPrecond
             net, classifier = load_cg_model(model_path, classifier_path)
             net = CGPrecond(net, classifier, guidance_rate=guidance_rate).to(device)
             model_source = 'adm'
         elif guidance_type in ['uncond', 'cfg']:                            # models from LDM
             from omegaconf import OmegaConf
-            from models.networks_edm import CFGPrecond
+            from models_amed.networks_edm import CFGPrecond
             if dataset_name in ['lsun_bedroom_ldm']:
-                config = OmegaConf.load('./models/ldm/configs/latent-diffusion/lsun_bedrooms-ldm-vq-4.yaml')
+                config = OmegaConf.load('./models_amed/ldm/configs/latent-diffusion/lsun_bedrooms-ldm-vq-4.yaml')
                 net = load_ldm_model(config, model_path)
                 net = CFGPrecond(net, img_resolution=64, img_channels=3, guidance_rate=1., guidance_type='uncond', label_dim=0).to(device)
             elif dataset_name in ['ms_coco']:
                 assert guidance_type == 'cfg'
-                config = OmegaConf.load('./models/ldm/configs/stable-diffusion/v1-inference.yaml')
+                config = OmegaConf.load('./models_amed/ldm/configs/stable-diffusion/v1-inference.yaml')
                 net = load_ldm_model(config, model_path)
                 net = CFGPrecond(net, img_resolution=64, img_channels=4, guidance_rate=guidance_rate, guidance_type='classifier-free', label_dim=True).to(device)
             model_source = 'ldm'
@@ -158,11 +158,11 @@ def main(predictor_path, max_batch_size, seeds, grid, outdir, subdirs, device=to
                     file_index = int(ckpt_name.split("-")[-1].split(".")[0])
                     if file_index > max_index:
                         max_index = file_index
-                        max_file = ckpt_name/e
+                        max_file = ckpt_name
                 predictor_path = os.path.join('.xps', file_name, max_file)
                 break
     dist.print0(f'Loading AMED predictor from "{predictor_path}"...')
-    with dnnlib.util.open_url(predictor_path, verbose=(dist.get_rank() == 0)) as f:
+    with dnnlib_amed.util.open_url(predictor_path, verbose=(dist.get_rank() == 0)) as f:
         AMED_predictor = pickle.load(f)['model'].to(device)
     
     # Update settings

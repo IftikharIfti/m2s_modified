@@ -2,7 +2,7 @@ import torch
 from torch_utils import persistence
 from torch_utils import distributed as dist
 import solvers_amed
-from solver_utils import get_schedule
+from solver_utils_amed import get_schedule
 
 #----------------------------------------------------------------------------
 

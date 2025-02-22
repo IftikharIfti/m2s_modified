@@ -5,8 +5,8 @@ import torch.nn as nn
 import numpy as np
 from einops import rearrange
 
-from models.ldm.util import instantiate_from_config
-from models.ldm.modules.attention import LinearAttention
+from models_amed.ldm.util import instantiate_from_config
+from models_amed.ldm.modules.attention import LinearAttention
 
 
 def get_timestep_embedding(timesteps, embedding_dim):
