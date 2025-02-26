@@ -1,0 +1,190 @@
+torchrun --standalone --nproc_per_node=1 --master_port=11111 train_amed.py \
+--dataset_name="celeba-hq" --data_dir="./datasets/celeba_hq_256" \
+--model_path_64="./m2s_author_checkpoints_for_p2w/celebahq64_500000.pt" \
+--model_path_256="./m2s_author_checkpoints_for_p2w/celebahq256_500000.pt" \
+--total_kimg=200 --batch=128 --lr=5e-5 --num_steps=4 --M=3 --afs=True \
+--sampler_tea="dpmpp" --max_order=3 --predict_x0=True --lower_order_final=True \
+--schedule_type="discrete" --schedule_rho=1 \
+--num_channels=256 --channel_mult="1,1,2,2,4,4" --num_res_blocks=2 --attention_resolutions="32,16,8"
+Training options for 64x64:
+{
+  "num_channels": 256,
+  "channel_mult": [
+    1,
+    1,
+    2,
+    2,
+    4,
+    4
+  ],
+  "num_res_blocks": 2,
+  "attention_resolutions": [
+    32,
+    16,
+    8
+  ],
+  "loss_kwargs": {
+    "class_name": "training.loss.AMED_loss"
+  },
+  "AMED_kwargs": {
+    "class_name": "training.networks.AMED_predictor",
+    "num_steps": 4,
+    "sampler_stu": "amed",
+    "sampler_tea": "dpmpp",
+    "M": 3,
+    "guidance_type": null,
+    "guidance_rate": 0.0,
+    "schedule_rho": 1.0,
+    "schedule_type": "discrete",
+    "afs": true,
+    "dataset_name": "celeba-hq",
+    "scale_dir": 0.01,
+    "scale_time": 0.0,
+    "max_order": 3,
+    "predict_x0": true,
+    "lower_order_final": true
+  },
+  "optimizer_kwargs": {
+    "class_name": "torch.optim.Adam",
+    "lr": 5e-05,
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "eps": 1e-08
+  },
+  "total_kimg": 200,
+  "kimg_per_tick": 1,
+  "snapshot_ticks": 200,
+  "state_dump_ticks": 200,
+  "dataset_name": "celeba-hq",
+  "batch_size": 128,
+  "batch_gpu": null,
+  "gpus": 1,
+  "cudnn_benchmark": true,
+  "guidance_type": null,
+  "guidance_rate": 0.0,
+  "data_dir": "./datasets/celeba_hq_256",
+  "seed": 578135255,
+  "run_dir": "./exps/64/00002-celeba-hq-4-5-amed-dpmpp-3-discrete1.0-afs",
+  "model_path": "./m2s_author_checkpoints_for_p2w/celebahq64_500000.pt"
+}
+Output directory: ./exps/64/00002-celeba-hq-4-5-amed-dpmpp-3-discrete1.0-afs
+Training options for 256x256:
+{
+  "num_channels": 256,
+  "channel_mult": [
+    1,
+    1,
+    2,
+    2,
+    4,
+    4
+  ],
+  "num_res_blocks": 2,
+  "attention_resolutions": [
+    32,
+    16,
+    8
+  ],
+  "loss_kwargs": {
+    "class_name": "training.loss.AMED_loss"
+  },
+  "AMED_kwargs": {
+    "class_name": "training.networks.AMED_predictor",
+    "num_steps": 4,
+    "sampler_stu": "amed",
+    "sampler_tea": "dpmpp",
+    "M": 3,
+    "guidance_type": null,
+    "guidance_rate": 0.0,
+    "schedule_rho": 1.0,
+    "schedule_type": "discrete",
+    "afs": true,
+    "dataset_name": "celeba-hq",
+    "scale_dir": 0.01,
+    "scale_time": 0.0,
+    "max_order": 3,
+    "predict_x0": true,
+    "lower_order_final": true
+  },
+  "optimizer_kwargs": {
+    "class_name": "torch.optim.Adam",
+    "lr": 5e-05,
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "eps": 1e-08
+  },
+  "total_kimg": 200,
+  "kimg_per_tick": 1,
+  "snapshot_ticks": 200,
+  "state_dump_ticks": 200,
+  "dataset_name": "celeba-hq",
+  "batch_size": 128,
+  "batch_gpu": null,
+  "gpus": 1,
+  "cudnn_benchmark": true,
+  "guidance_type": null,
+  "guidance_rate": 0.0,
+  "data_dir": "./datasets/celeba_hq_256",
+  "seed": 578135255,
+  "run_dir": "./exps/256/00000-celeba-hq-4-5-amed-dpmpp-3-discrete1.0-afs",
+  "model_path": "./m2s_author_checkpoints_for_p2w/celebahq256_500000.pt"
+}
+Output directory: ./exps/256/00000-celeba-hq-4-5-amed-dpmpp-3-discrete1.0-afs
+Training AMED predictor for 64x64...
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/home/deeplearning01/IftiNamiYusuf/m2s-copy/m2s_modified/train_amed.py", line 156, in <module>
+[rank0]:     main()
+[rank0]:   File "/home/deeplearning01/anaconda3/envs/M2S/lib/python3.9/site-packages/click/core.py", line 1161, in __call__
+[rank0]:     return self.main(*args, **kwargs)
+[rank0]:   File "/home/deeplearning01/anaconda3/envs/M2S/lib/python3.9/site-packages/click/core.py", line 1082, in main
+[rank0]:     rv = self.invoke(ctx)
+[rank0]:   File "/home/deeplearning01/anaconda3/envs/M2S/lib/python3.9/site-packages/click/core.py", line 1443, in invoke
+[rank0]:     return ctx.invoke(self.callback, **ctx.params)
+[rank0]:   File "/home/deeplearning01/anaconda3/envs/M2S/lib/python3.9/site-packages/click/core.py", line 788, in invoke
+[rank0]:     return __callback(*args, **kwargs)
+[rank0]:   File "/home/deeplearning01/IftiNamiYusuf/m2s-copy/m2s_modified/train_amed.py", line 151, in main
+[rank0]:     training_loop.training_loop(**c)
+[rank0]:   File "/home/deeplearning01/IftiNamiYusuf/m2s-copy/m2s_modified/training_amed/training_loop.py", line 105, in training_loop
+[rank0]:     net, diffusion = load_lwdm_model(
+[rank0]:   File "/home/deeplearning01/IftiNamiYusuf/m2s-copy/m2s_modified/training_amed/training_loop.py", line 45, in load_lwdm_model
+[rank0]:     model, diffusion = create_model_and_diffusion(**args)
+[rank0]:   File "/home/deeplearning01/IftiNamiYusuf/m2s-copy/m2s_modified/guided_diffusion/script_util.py", line 99, in create_model_and_diffusion
+[rank0]:     model = create_model(
+[rank0]:   File "/home/deeplearning01/IftiNamiYusuf/m2s-copy/m2s_modified/guided_diffusion/script_util.py", line 160, in create_model
+[rank0]:     channel_mult = tuple(int(ch_mult) for ch_mult in channel_mult.split(","))
+[rank0]: AttributeError: 'tuple' object has no attribute 'split'
+[rank0]:[W223 12:03:16.361745589 ProcessGroupNCCL.cpp:1496] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+E0223 12:03:17.675197 720235 site-packages/torch/distributed/elastic/multiprocessing/api.py:869] failed (exitcode: 1) local_rank: 0 (pid: 720262) of binary: /home/deeplearning01/anaconda3/envs/M2S/bin/python
+Traceback (most recent call last):
+  File "/home/deeplearning01/anaconda3/envs/M2S/bin/torchrun", line 8, in <module>
+    sys.exit(main())
+  File "/home/deeplearning01/anaconda3/envs/M2S/lib/python3.9/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 355, in wrapper
+    return f(*args, **kwargs)
+  File "/home/deeplearning01/anaconda3/envs/M2S/lib/python3.9/site-packages/torch/distributed/run.py", line 918, in main
+    run(args)
+  File "/home/deeplearning01/anaconda3/envs/M2S/lib/python3.9/site-packages/torch/distributed/run.py", line 909, in run
+    elastic_launch(
+  File "/home/deeplearning01/anaconda3/envs/M2S/lib/python3.9/site-packages/torch/distributed/launcher/api.py", line 138, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/home/deeplearning01/anaconda3/envs/M2S/lib/python3.9/site-packages/torch/distributed/launcher/api.py", line 269, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+train_amed.py FAILED
+------------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2025-02-23_12:03:17
+  host      : deeplearningpc01
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 720262)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+

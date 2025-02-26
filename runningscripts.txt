@@ -1,0 +1,31 @@
+torchrun --standalone --nproc_per_node=1 --master_port=11111 train_amed.py \
+--dataset_name="celeba-hq" --data_dir="./datasets/celeba_hq_256" \
+--model_path_64="./m2s_author_checkpoints_for_p2w/celebahq64_500000.pt" --model_path_256="./m2s_author_checkpoints_for_p2w/celebahq256_500000.pt" \
+--total_kimg=200 --batch=128 --lr=5e-5 \
+--num_steps=4 --M=3 --afs=True --sampler_tea="dpmpp" --max_order=3 --predict_x0=True --lower_order_final=True \
+--schedule_type="discrete" --schedule_rho=1
+
+
+
+Iftikhar Jaman Ifti
+torchrun --standalone --nproc_per_node=1 --master_port=11111 train_amed.py \
+--dataset_name="celeba-hq" --data_dir="./datasets/celeba_hq_256" \
+--model_path_64="./m2s_author_checkpoints_for_p2w/celebahq64_500000.pt" \
+--model_path_256="./m2s_author_checkpoints_for_p2w/celebahq256_500000.pt" \
+--total_kimg=200 --batch=128 --lr=5e-5 --num_steps=4 --M=3 --afs=True \
+--sampler_tea="dpmpp" --max_order=3 --predict_x0=True --lower_order_final=True \
+--schedule_type="discrete" --schedule_rho=1 \
+--num_channels=256 --channel_mult="1,1,2,2,4,4" --num_res_blocks=2 --attention_resolutions="32,16,8"
+
+
+
+version after error3.txt
+
+torchrun --standalone --nproc_per_node=1 --master_port=11111 train_amed.py \
+--dataset_name="celeba-hq" --data_dir="./datasets/celeba_hq_256" \
+--model_path_64="./m2s_author_checkpoints_for_p2w/celebahq64_500000.pt" \
+--model_path_256="./m2s_author_checkpoints_for_p2w/celebahq256_500000.pt" \
+--total_kimg=200 --batch=128 --lr=5e-5 --num_steps=4 --M=3 --afs=True \
+--sampler_tea="dpmpp" --max_order=3 --predict_x0=True --lower_order_final=True \
+--schedule_type="discrete" --schedule_rho=1 \
+--num_channels=256 --channel_mult="1,1,2,2,4,4" --num_res_blocks=2 --attention_resolutions="32,16,8"
